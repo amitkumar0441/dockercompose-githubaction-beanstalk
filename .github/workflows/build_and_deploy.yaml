@@ -4,7 +4,7 @@ name: Deploy the web app on Beanstalk
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   Deploy:
