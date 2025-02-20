@@ -1,0 +1,33 @@
+name: Deploy the web app on Beanstalk
+
+# Trigger the workflow on push to the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Generate deployment package (excluding git files)
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+  
+      # Deploy to AWS Elastic Beanstalk
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: simplereactwebapp
+          environment_name: Simplereactwebapp-env
+          version_label: ${{ github.sha }}
+          existing_bucket_name: elasticbeanstalk-ap-south-1-446320360541
+          region: ap-south-1
+          deployment_package: deploy.zip
